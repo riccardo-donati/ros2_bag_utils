@@ -3,7 +3,7 @@ from rclpy.node import Node
 import rosbag2_py
 import cv2
 from cv_bridge import CvBridge
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage
 from rclpy.serialization import deserialize_message
 import os
 import tkinter as tk
@@ -37,9 +37,8 @@ class BagImageExtractor(Node):
         while self.reader.has_next():
             (topic, data, t) = self.reader.read_next()
             if topic == self.image_topic:
-                print(topic)
-                img_msg = deserialize_message(data, Image)
-                cv_image = self.bridge.imgmsg_to_cv2(img_msg, desired_encoding="bgr8")
+                img_msg = deserialize_message(data, CompressedImage)
+                cv_image = self.bridge.compressed_imgmsg_to_cv2(img_msg, desired_encoding="bgr8")
                 filename = f"{self.output_dir}/frame_{count:05d}.png"
                 if count % 20 == 0:
                     cv2.imwrite(filename, cv_image)
